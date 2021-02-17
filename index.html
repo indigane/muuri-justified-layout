@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .grid {
+        position: relative;
+        width: 90%;
+        max-width: 1800px;
+        margin: auto;
+      }
+      .item {
+        display: block;
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        /* margin: 5px; */
+        z-index: 1;
+      }
+      .item.muuri-item-dragging {
+        z-index: 3;
+      }
+      .item.muuri-item-releasing {
+        z-index: 2;
+      }
+      .item.muuri-item-hidden {
+        z-index: 0;
+      }
+      .item-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: #b16086;
+        color: #fff;
+        transform-origin: 0 0;
+        transition: transform .3s;
+      }
+
+      .item:nth-child(1n) {
+        width: 100px;
+        height: 150px;
+      }
+      .item:nth-child(2n) {
+        width: 100px;
+        height: 100px;
+      }
+      .item:nth-child(3n) {
+        width: 150px;
+        height: 100px;
+      }
+      .item:nth-child(4n) {
+        width: 150px;
+        height: 150px;
+      }
+      .item:nth-child(4n) {
+        width: 400px;
+        height: 100px;
+      }
+      .item:nth-child(5n) {
+        width: 100px;
+        height: 400px;
+      }
+      .item:nth-child(6n) {
+        width: 100px;
+        height: 111px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-content">
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/muuri@0.9.3/dist/muuri.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/justified-layout@4.1.0/dist/justified-layout.min.js"></script>
+    <script>const justifiedLayout = require('justified-layout');</script>
+    <script>
+      const grid = new Muuri('.grid', {
+        dragEnabled: true,
+        layout: function (grid, layoutId, items, width, height, callback) {
+          var layout = {
+            id: layoutId,
+            items: items,
+            slots: [],
+            styles: {},
+          };
+          var justifiedLayoutItems = [];
+          var justifiedLayoutResult;
+          var scalingRatio;
+          var len;
+          var item;
+          var box;
+          var i;
+
+          grid._refreshDimensions();
+
+          len = items.length;
+          for (i = 0; i < len; i++) {
+            item = items[i];
+            if (item._justifiedLayout == undefined) {
+              item._justifiedLayout = {
+                contentElement: item.getElement().querySelector('.item-content'),
+                originalWidth: item.getWidth(),
+                originalHeight: item.getHeight(),
+                previousScalingRatio: 0,
+              }
+            }
+            justifiedLayoutItems.push({
+              width: item._justifiedLayout.originalWidth,
+              height: item._justifiedLayout.originalHeight,
+            });
+          }
+
+          justifiedLayoutResult = justifiedLayout(justifiedLayoutItems, {
+            containerWidth: grid._width,
+            boxSpacing: 10,
+            targetRowHeightTolerance: 0.05,
+          });
+
+          len = justifiedLayoutResult.boxes.length;
+          for (i = 0; i < len; i++) {
+            box = justifiedLayoutResult.boxes[i];
+            item = items[i];
+            item._width = box.width;
+            item._height = box.height;
+            scalingRatio = box.width / item._justifiedLayout.originalWidth;
+            if (scalingRatio != item._justifiedLayout.previousScalingRatio) {
+              item._justifiedLayout.contentElement.style.transform = 'scale(' + scalingRatio + ')';
+            }
+            layout.slots.push(box.left, box.top);
+          }
+
+          newHeight = justifiedLayoutResult.containerHeight;
+
+          layout.styles.width = '100%';
+          layout.styles.height = newHeight + 'px';
+
+          callback(layout);
+        },
+      });
+    </script>
+  </body>
+</html>
